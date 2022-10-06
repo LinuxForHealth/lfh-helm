@@ -1,22 +1,21 @@
 ## Contributing
-To contribute code or documentation, please submit a [pull request](https://github.com/alvearie/alvearie-helm/pulls).
+To contribute code or documentation, please submit a [pull request](https://github.com/linuxforhealth/lfh-helm/pulls).
 
 Because we're currently configured to do a release each time we merge to main, each PR will need to include the following changes:
-1. bump the chart version at https://github.com/Alvearie/alvearie-helm/blob/main/charts/fhir-server/Chart.yaml#L4
+1. bump the chart version at https://github.com/linuxforhealth/lfh-helm/blob/main/charts/fhir-server/Chart.yaml#L4
 2. replace the changes list in Chart.yaml with whatever changes are included in the PR
 3. run helm-docs to generate an updated README and include that with your PR
 
 A good way to familiarize yourself with the codebase and contribution process is
-to look for and tackle low-hanging fruit in the [issue tracker](https://github.com/alvearie/alvearie-helm/issues).
+to look for and tackle low-hanging fruit in the [issue tracker](https://github.com/linuxforhealth/lfh-helm/issues).
 Before embarking on a more ambitious contribution, please get in touch.
 
 ## Communication
-Connect with us through https://alvearie.slack.com or open an [issue](https://github.com/alvearie/alvearie-helm/issues).
-Access to the Alvearie Slack can be requested at https://alvearie.io/contributions/requestSlackAccess.
+Open an [issue](https://github.com/linuxforhealth/lfh-helm/issues) or connect with us through https://chat.fhir.org/#narrow/stream/212434-LinuxForHealth.
 
 ## Reviews
 The project maintainers use [GitHub reviews](https://github.com/features/code-review) to indicate acceptance.
-A change requires approval from one or more maintainers for each component affected.
+A change requires approval from one or more maintainers.
 Sometimes reviewers will leave a comment "LGTM" to indicate that the change "looks good to me".
 
 ## Legal
