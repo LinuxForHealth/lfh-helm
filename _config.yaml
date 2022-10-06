@@ -1,0 +1,3 @@
+theme: jekyll-theme-minimal
+title: LinuxForHealth Helm Charts
+description: Helm charts for deploying LinuxForHealth projects to Kubernetes.
