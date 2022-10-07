@@ -5,6 +5,41 @@ entries:
       artifacthub.io/changes: |
         # When using the list of objects option the valid supported kinds are
         # added, changed, deprecated, removed, fixed, and security.
+        - kind: fixed
+          description: schematool should use its own container resources config
+        - kind: changed
+          description: updated default requests and limits for schematool job
+      artifacthub.io/license: Apache-2.0
+    apiVersion: v2
+    appVersion: 5.0.0
+    created: "2022-10-07T20:46:51.174138916Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 10.16.2
+    - condition: keycloak.enabled
+      name: keycloak
+      repository: https://codecentric.github.io/helm-charts
+      version: 18.3.0
+    description: Helm chart for the LinuxForHealth FHIR Server
+    digest: 6160a468075815a9f4cf44abd1e6b8fe4823eb25ee489195a2a19a974d9626d6
+    home: https://linuxforhealth.github.io/FHIR/
+    maintainers:
+    - email: lmsurpre@merative.com
+      name: Lee Surprenant
+    name: fhir-server
+    sources:
+    - https://github.com/LinuxForHealth/lfh-helm
+    - https://github.com/LinuxForHealth/FHIR
+    type: application
+    urls:
+    - https://github.com/LinuxForHealth/lfh-helm/releases/download/fhir-server-0.8.1/fhir-server-0.8.1.tgz
+    version: 0.8.1
+  - annotations:
+      artifacthub.io/changes: |
+        # When using the list of objects option the valid supported kinds are
+        # added, changed, deprecated, removed, fixed, and security.
         - kind: changed
           description: renamed chart from ibm-fhir-server to just fhir-server
         - kind: changed
@@ -36,4 +71,4 @@ entries:
     urls:
     - https://github.com/LinuxForHealth/lfh-helm/releases/download/fhir-server-0.8.0/fhir-server-0.8.0.tgz
     version: 0.8.0
-generated: "2022-10-06T16:35:12.122300541Z"
+generated: "2022-10-07T20:46:51.174152817Z"
