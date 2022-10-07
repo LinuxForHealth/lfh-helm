@@ -12,7 +12,7 @@ ConfigMaps and Secrets to support the wide range of configuration options availa
 ## Sample usage
 
 ```sh
-helm repo add linuxforhealth https://linuxforhealth.github.io/linuxforhealth-helm
+helm repo add linuxforhealth https://linuxforhealth.github.io/lfh-helm
 export POSTGRES_PASSWORD=$(openssl rand -hex 20)
 helm upgrade --install --render-subchart-notes fhir-server linuxforhealth/fhir-server --set postgresql.postgresqlPassword=${POSTGRES_PASSWORD} --set ingress.hostname=example.com --set 'ingress.tls[0].secretName=cluster-tls-secret'
 ```
@@ -29,7 +29,7 @@ nginx.ingress.kubernetes.io/backend-protocol: HTTPS
 ```
 This can be accomplished via `--set 'ingress.annotations.nginx\.ingress\.kubernetes\.io/backend-protocol=HTTPS'` or
 from your values override file.
-See https://github.com/linuxforhealth/linuxforhealth-helm/blob/main/charts/fhir-server/values-nginx.yaml for an example.
+See https://github.com/linuxforhealth/lfh-helm/blob/main/charts/fhir-server/values-nginx.yaml for an example.
 
 ## Customizing the FHIR server configuration
 This helm chart uses a [named template](https://helm.sh/docs/chart_template_guide/named_templates/) to generate the `fhir-server-config.json` file which will control the configuration of the deployed FHIR server. The template name is `defaultFhirServerConfig` and it is defined in the `_fhirServerConfigJson.tpl` file. It uses many of this helm chart's values as the values of config properties within the generated `fhir-server-config.json` file.
