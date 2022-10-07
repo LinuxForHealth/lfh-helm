@@ -1,7 +1,7 @@
 apiVersion: v2
 description: Helm chart for the LinuxForHealth FHIR Server
 name: fhir-server
-version: 0.8.0
+version: 0.8.1
 appVersion: 5.0.0
 dependencies:
   - name: postgresql
@@ -25,7 +25,7 @@ annotations:
   artifacthub.io/changes: |
     # When using the list of objects option the valid supported kinds are
     # added, changed, deprecated, removed, fixed, and security.
+    - kind: fixed
+      description: schematool should use its own container resources config
     - kind: changed
-      description: renamed chart from ibm-fhir-server to just fhir-server
-    - kind: changed
-      description: updated images from ibmcom/ibm-fhir-* to ghcr.io/linuxforhealth/fhir-*
+      description: updated default requests and limits for schematool job

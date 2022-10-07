@@ -65,7 +65,7 @@ spec:
             runAsUser: 1001
             runAsGroup: 1001
           resources:
-            {{ toYaml .Values.resources | nindent 12 }}
+            {{ toYaml .Values.schemaMigration.resources | nindent 12 }}
           volumeMounts:
           {{- with .Values.extraVolumeMounts }}
               {{- tpl . $ | nindent 12 }}

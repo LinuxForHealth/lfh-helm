@@ -1,5 +1,5 @@
 
-![Version: 0.8.0](https://img.shields.io/badge/Version-0.8.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 5.0.0](https://img.shields.io/badge/AppVersion-5.0.0-informational?style=flat-square)
+![Version: 0.8.1](https://img.shields.io/badge/Version-0.8.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 5.0.0](https://img.shields.io/badge/AppVersion-5.0.0-informational?style=flat-square)
 
 # The LinuxForHealth FHIR Server Helm Chart
 
@@ -347,7 +347,7 @@ If a truststore Secret is specified, the default truststore file will be replace
 | schemaMigration.image.pullSecret | string | `"all-icr-io"` |  |
 | schemaMigration.image.repository | string | `"ghcr.io/linuxforhealth/fhir-schematool"` | The repository to pull the LinuxForHealth FHIR Schema Tool image from |
 | schemaMigration.image.tag | string | this chart's appVersion | LinuxForHealth FHIR Schema Tool container image tag |
-| schemaMigration.resources | object | `{}` | container resources for the schema migration job |
+| schemaMigration.resources | object | `{"limits":{"ephemeral-storage":"256Mi","memory":"256Mi"},"requests":{"ephemeral-storage":"64Mi","memory":"64Mi"}}` | container resources for the schema migration job |
 | schemaMigration.ttlSecondsAfterFinished | int | `100` | How many seconds to wait before cleaning up a finished schema migration job. This automatic clean-up can have unintended interactions with CI tools like ArgoCD; setting this value to nil will disable the feature. |
 | security.jwtValidation.audience | string | `"https://{{ tpl $.Values.ingress.hostname $ }}/fhir-server/api/v4"` |  |
 | security.jwtValidation.enabled | bool | `false` |  |
