@@ -346,6 +346,8 @@ objectStorage:
   batchIdEncryptionKey:
 ingress:
   enabled: true
+  # -- The name of the Ingress Class associated with this ingress
+  ingressClassName:
   annotations: {}
   # -- The default cluster hostname, used for both ingress.rules.host and ingress.tls.hosts.
   # If you have more than one, you'll need to set overrides for the rules and tls separately.
