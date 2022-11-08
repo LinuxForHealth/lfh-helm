@@ -27,3 +27,5 @@ annotations:
     # added, changed, deprecated, removed, fixed, and security.
     - kind: added
       description: optional ingress.ingressClassName config
+    - kind: changed
+      description: added user and db secret checksums to deployment
