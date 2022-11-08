@@ -18,6 +18,8 @@ spec:
         app.kubernetes.io/component: server
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configMap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/fhir-db-secret.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/fhir-user-secret.yaml") . | sha256sum }}
     spec:
       volumes:
         - name: fhir-server-config

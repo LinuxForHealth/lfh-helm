@@ -1,7 +1,7 @@
 apiVersion: v2
 description: Helm chart for the LinuxForHealth FHIR Server
 name: fhir-server
-version: 0.8.1
+version: 0.8.2
 appVersion: 5.0.0
 dependencies:
   - name: postgresql
@@ -25,7 +25,7 @@ annotations:
   artifacthub.io/changes: |
     # When using the list of objects option the valid supported kinds are
     # added, changed, deprecated, removed, fixed, and security.
-    - kind: fixed
-      description: schematool should use its own container resources config
+    - kind: added
+      description: optional ingress.ingressClassName config
     - kind: changed
-      description: updated default requests and limits for schematool job
+      description: added user and db secret checksums to deployment

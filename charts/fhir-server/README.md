@@ -1,5 +1,5 @@
 
-![Version: 0.8.1](https://img.shields.io/badge/Version-0.8.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 5.0.0](https://img.shields.io/badge/AppVersion-5.0.0-informational?style=flat-square)
+![Version: 0.8.2](https://img.shields.io/badge/Version-0.8.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 5.0.0](https://img.shields.io/badge/AppVersion-5.0.0-informational?style=flat-square)
 
 # The LinuxForHealth FHIR Server Helm Chart
 
@@ -254,6 +254,7 @@ If a truststore Secret is specified, the default truststore file will be replace
 | ingress.annotations | object | `{}` |  |
 | ingress.enabled | bool | `true` |  |
 | ingress.hostname | string | `"{{ .Release.Name }}.example.com"` | The default cluster hostname, used for both ingress.rules.host and ingress.tls.hosts. If you have more than one, you'll need to set overrides for the rules and tls separately. |
+| ingress.ingressClassName | string | `nil` | The name of the Ingress Class associated with this ingress |
 | ingress.rules[0].host | string | `"{{ tpl $.Values.ingress.hostname $ }}"` |  |
 | ingress.rules[0].paths[0].path | string | `"/"` |  |
 | ingress.rules[0].paths[0].pathType | string | `"Prefix"` |  |
