@@ -35,3 +35,5 @@ annotations:
       description: split db user creds in two; now uses separate admin user for schematool
     - kind: removed
       description: support for Db2 and all Db2-related values
+    - kind: removed
+      description: support for networking.k8s.io/v1/beta (kubernetes <1.19)

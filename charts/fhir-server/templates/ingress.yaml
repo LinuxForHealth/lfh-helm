@@ -1,6 +1,6 @@
 {{- $ingress := .Values.ingress -}}
 {{- if $ingress.enabled -}}
-apiVersion: {{ template "fhir.ingressAPIVersion" . }}
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ template "fhir.fullname" . }}
@@ -23,18 +23,12 @@ spec:
         paths:
           {{- range .paths }}
           - path: {{ .path }}
-            {{- if $.Capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress" }}
             pathType: {{ .pathType }}
             backend:
               service:
                 name: {{ template "fhir.fullname" $ }}
                 port:
                   name: {{ $ingress.servicePort }}
-            {{- else }}
-            backend:
-              serviceName: {{ template "fhir.fullname" $ }}
-              servicePort: {{ $ingress.servicePort }}
-            {{- end }}
           {{- end }}
     {{- end }}
   {{- if $ingress.tls }}

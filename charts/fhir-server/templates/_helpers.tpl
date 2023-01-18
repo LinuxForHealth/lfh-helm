@@ -52,18 +52,6 @@ app.kubernetes.io/name: {{ include "fhir.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
-
-{{/*
-Return the appropriate apiVersion for ingress.
-*/}}
-{{- define "fhir.ingressAPIVersion" -}}
-{{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress" -}}
-{{- print "networking.k8s.io/v1" -}}
-{{- else -}}
-{{- print "networking.k8s.io/v1beta1" -}}
-{{- end -}}
-{{- end -}}
-
 {{/*
 Create a default fully qualified PostgreSQL name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
