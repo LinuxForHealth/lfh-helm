@@ -91,15 +91,16 @@ In addition to providing a default FHIR server configuration named template, thi
 
 The deployer can specify a custom search parameters named template which will be used in the generation of the `extension-search-parameters.json` file by overriding the `extensionSearchParametersTemplate` chart value.
 
-The deployer can specify custom datasource named templates which will be used in the generation of the `datasource.xml` and `bulkdata.xml` files by overriding the `datasourcesTemplate` chart value. The default for this chart value is a datasources template for a Postgres database, but this helm chart also provides named templates for Db2, Db2 on Cloud, and Derby databases in the `_datasourcesXml.tpl` file.
+The deployer can specify custom datasource named templates which will be used in the generation of the `datasource.xml` and `bulkdata.xml` files by overriding the `datasourcesTemplate` chart value.
+The default for this chart value is a template with datasources for a single Postgres database.
 
 ## Using existing Secrets for sensitive data
 
 This helm chart specifies chart values for the following pieces of sensitive data:
 
-- Database password or api key:
+- Database user passwords:
+    - `db.adminPassword`
     - `db.password`
-    - `db.apiKey`
 - FHIR server user and admin passwords:
     - `fhirUserPassword`
     - `fhirAdminPassword`
@@ -113,13 +114,13 @@ These values can be specified directly in the `values.yaml` file, or the deploye
 
 ### Database password or api key
 
-To have the `db.password` and `db.apiKey` values read from an existing Secret, the deployer must override the following chart values:
+To have the `db.adminPassword` and `db.password` values read from an existing Secret, the deployer must override the following chart values:
 
 - `db.dbSecret` - this is set to the name of the Secret from which the database information will be read
-- `db.passwordSecretKey` - this is set to the key of the key/value pair within the Secret that contains the password
-- `db.apiKeySecretKey` - this is set to the key of the key/value pair within the Secret that contains the api key
+- `db.adminPasswordKey` - this is set to the key of the key/value pair within the Secret that contains the admin user password (for schema management)
+- `db.userPasswordKey` - this is set to the key of the key/value pair within the Secret that contains the fhir-server's user password
 
-If the `db.dbSecret` value is set, this helm chart will only look in the specified Secret for the password and api key. The `db.password` and `db.apiKey` chart values will be ignored.
+If the `db.dbSecret` value is set, this helm chart will only look in the specified Secret for the passwords. The `db.adminPassword` and `db.password` chart values will be ignored.
 
 ### FHIR server user and admin passwords
 

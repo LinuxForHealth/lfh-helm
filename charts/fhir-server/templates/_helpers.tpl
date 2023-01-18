@@ -82,17 +82,24 @@ Get the database server's hostname
 {{- end -}}
 
 {{/*
+Get the admin user to connect to the database server
+*/}}
+{{- define "fhir.database.adminUser" -}}
+{{- ternary "postgres" .Values.db.adminUser .Values.postgresql.enabled -}}
+{{- end -}}
+
+{{/*
 Get the user to connect to the database server
 */}}
 {{- define "fhir.database.user" -}}
-{{- ternary .Values.postgresql.postgresqlUsername .Values.db.user .Values.postgresql.enabled -}}
+{{- ternary .Values.postgresql.auth.username .Values.db.user .Values.postgresql.enabled -}}
 {{- end -}}
 
 {{/*
 Get the name of the database
 */}}
 {{- define "fhir.database.name" -}}
-{{- ternary .Values.postgresql.postgresqlDatabase .Values.db.name .Values.postgresql.enabled -}}
+{{- ternary .Values.postgresql.auth.database .Values.db.name .Values.postgresql.enabled -}}
 {{- end -}}
 
 {{/*
@@ -120,11 +127,24 @@ Get the database credentials secret name.
 {{/*
 Get the database credentials password secret key.
 */}}
-{{- define "fhir.database.passwordSecretKey" -}}
+{{- define "fhir.database.adminPasswordKey" -}}
 {{- if .Values.postgresql.enabled }}
-    {{- printf "postgresql-password" -}}
+    {{- include "postgresql.adminPasswordKey" .Subcharts.postgresql }}
 {{- else if (.Values.db.dbSecret) -}}
-    {{- printf "%s" .Values.db.passwordSecretKey -}}
+    {{- printf "%s" .Values.db.adminPasswordKey -}}
+{{- else }}
+    {{- printf "password" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get the database credentials password secret key.
+*/}}
+{{- define "fhir.database.userPasswordKey" -}}
+{{- if .Values.postgresql.enabled }}
+    {{- include "postgresql.userPasswordKey" .Subcharts.postgresql }}
+{{- else if (.Values.db.dbSecret) -}}
+    {{- printf "%s" .Values.db.userPasswordKey -}}
 {{- else }}
     {{- printf "password" -}}
 {{- end -}}

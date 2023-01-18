@@ -57,59 +57,67 @@ endpoints:
 
 # see <https://github.com/bitnami/charts/tree/master/bitnami/postgresql> for details
 postgresql:
-  # -- enable an included PostgreSQL DB.
-  # if set to `false`, the connection settings under the `db` key are used
+  # -- Enable an included PostgreSQL DB.
+  # If set to `false`, the connection settings under the `db` key are used
   enabled: true
   image:
-    # -- the tag for the postgresql image
+    # -- The tag for the postgresql image.
     tag: 14.5.0
-  # -- name of the database to create.
-  # see: <https://github.com/bitnami/bitnami-docker-postgresql/blob/master/README.md#creating-a-database-on-first-run>
-  postgresqlDatabase: "fhir"
-  # -- Name of existing secret to use for PostgreSQL passwords.
-  # The secret must contain the keys `postgresql-password`
-  # (the password for `postgresqlUsername` when it is different from `postgres`),
-  # `postgresql-postgres-password` (which will override `postgresqlPassword`),
-  # `postgresql-replication-password` (which will override `replication.password`), and
-  # `postgresql-ldap-password` (used to authenticate on LDAP).
-  # The value is evaluated as a template.
-  existingSecret: ""
-  containerSecurityContext:
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-        - ALL
-  # -- Extended Runtime Config Parameters (appended to main or default configuration)
-  postgresqlExtendedConf:
-    # override the default value of 0 to support bulk import and export
-    maxPreparedTransactions: 24
+  auth:
+    # -- The user for connecting from the FHIR server to the database
+    username: fhirserver
+    # -- The user password for connecting from the FHIR server to the database
+    password: change-password
+    # -- The name of the database
+    database: postgres
+    # -- Name of existing secret to use for PostgreSQL passwords.
+    # `auth.postgresPassword`, `auth.password`, and `auth.replicationPassword` will be ignored
+    # and picked up from this secret.
+    existingSecret: ""
+  # -- Extended Runtime Config Parameters (appended to main or default configuration).
+  primary:
+    extendedConfiguration: |
+      # override the default value of 0 to support bulk import and export
+      max_prepared_transactions = 100
 
 db:
+  # -- The database type; `postgresql` or `derby`.
   type: postgresql
   host: postgres
   port: 5432
+  # -- Whether to use TLS on the connection between the FHIR server and the database.
   enableTls: false
   certPath:
+  # -- The database name.
+  # Only used when `postgresql.enabled` is false.
   name: postgres
-  user: postgres
+  # -- The user for connecting from the schematool to the database.
+  # Only used when `postgresql.enabled` is false.
+  adminUser: postgres
+  # -- The user for connecting from the FHIR server to the database.
+  # Only used when `postgresql.enabled` is false.
+  user: fhirserver
   # -- The name of a Secret from which to retrieve database information.
-  # If this value is set, it is expected that passwordSecretKey and/or apiKeySecretKey will also be set.
-  dbSecret: postgres
-  # -- For the Secret specified in dbSecret, the key of the key/value pair containing the password.
+  # Only used when `postgresql.enabled` is false.
+  # If this value is set, it is expected that adminPasswordKey and userPasswordKey will also be set.
+  dbSecret: postgresql
+  # -- For the Secret specified in dbSecret, the key of the key/value pair containing the admin user password.
+  # Only used when `postgresql.enabled` is false.
+  # Used for connecting from the schematool to the database.
   # This value will be ignored if the dbSecret value is not set.
-  passwordSecretKey: postgresql-password
-  # -- For the Secret specified in dbSecret, the key of the key/value pair containing the apiKey.
+  adminPasswordKey: postgres-password
+  # -- For the Secret specified in dbSecret, the key of the key/value pair containing the user password.
+  # Only used when `postgresql.enabled` is false.
+  # Used for connecting from the FHIR server to the database.
   # This value will be ignored if the dbSecret value is not set.
-  apiKeySecretKey:
-  # -- The database password. If dbSecret is set, the password will be set from its contents.
+  userPasswordKey: password
+  # -- The database admin user password. If dbSecret is set, the password will be set from its contents.
+  # Only used when `postgresql.enabled` is false.
+  adminPassword:
+  # -- The database user password. If dbSecret is set, the password will be set from its contents.
+  # Only used when `postgresql.enabled` is false.
   password:
-  # -- The database apiKey. If apiKeySecret is set, the apiKey will be set from its contents.
-  apiKey:
   schema: fhirdata
-  tenantKey:
-  sslConnection: true
-  pluginName:
-  securityMechanism:
 
 keycloak:
   enabled: false
@@ -117,22 +125,22 @@ keycloak:
     repository: quay.io/alvearie/smart-keycloak
     tag: 0.5.1
     pullPolicy: IfNotPresent
-  # -- An initial keycloak admin username for creating the initial Keycloak admin user
+  # -- An initial keycloak admin username for creating the initial Keycloak admin user.
   adminUsername: admin
-  # -- An initial keycloak admin password for creating the initial Keycloak admin user
+  # -- An initial keycloak admin password for creating the initial Keycloak admin user.
   adminPassword: change-password
-  # -- Extra volumes for the Keycloak StatefulSets
+  # -- Extra volumes for the Keycloak StatefulSets.
   # @default -- a single volume named keycloak-admin with contents from the keycloak-admin-secret
   extraVolumes: |
     - name: keycloak-admin
       secret:
         secretName: {{ template "keycloak.fullname" $ }}-admin-secret
-  # -- Extra volume mounts for the Keycloak StatefulSet
+  # -- Extra volume mounts for the Keycloak StatefulSet.
   # @default -- mount the keycloak-admin volume at /secrets/keycloak-admin
   extraVolumeMounts: |
     - name: keycloak-admin
       mountPath: /secrets/keycloak-admin
-  # -- Extra environment variables for the Keycloak StatefulSet
+  # -- Extra environment variables for the Keycloak StatefulSet.
   # @default -- KEYCLOAK_USER_FILE/KEYCLOAK_PASSWORD_FILE set to the keycloak-admin mountPath
   extraEnv: |
     - name: KEYCLOAK_USER_FILE
@@ -160,7 +168,7 @@ keycloak:
             redirectURIs:
               - "http://localhost:4567/inferno/*"
             defaultScopes: ["launch/patient"]
-            # -- OAuth 2.0 scopes supported by this client
+            # -- OAuth 2.0 scopes supported by this client.
             # @default -- all scopes defined by the `security.oauth` configuration.
             optionalScopes: []
           infernoBulk:
@@ -171,7 +179,7 @@ keycloak:
             clientAuthenticatorType: client-jwt
             jwksUrl: ""
             defaultScopes: []
-            # -- OAuth 2.0 scopes supported by this client
+            # -- OAuth 2.0 scopes supported by this client.
             # @default -- all scopes defined by the `security.oauth` configuration.
             optionalScopes: []
 

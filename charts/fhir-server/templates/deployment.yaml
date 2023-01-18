@@ -217,7 +217,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: "{{ include "fhir.database.secretName" $ }}"
-                  key: "{{ include "fhir.database.passwordSecretKey" $ }}"
+                  key: "{{ include "fhir.database.userPasswordKey" $ }}"
             {{- if ne .Values.db.type "postgresql" }}
             - name: FHIR_DB_APIKEY
               valueFrom:
@@ -258,7 +258,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: "{{ include "fhir.database.secretName" $ }}"
-                  key: "{{ include "fhir.database.passwordSecretKey" $ }}"
+                  key: "{{ include "fhir.database.userPasswordKey" $ }}"
             {{- if ne .Values.db.type "postgresql" }}
             - name: BATCH_DB_APIKEY
               valueFrom:
