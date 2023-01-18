@@ -71,11 +71,12 @@ postgresql:
     # -- The name of the database
     database: postgres
     # -- Name of existing secret to use for PostgreSQL passwords.
-    # `auth.postgresPassword`, `auth.password`, and `auth.replicationPassword` will be ignored
-    # and picked up from this secret.
+    # If valued, `auth.postgresPassword`, `auth.password`, and `auth.replicationPassword`
+    # will be ignored and picked up from this secret.
     existingSecret: ""
-  # -- Extended Runtime Config Parameters (appended to main or default configuration).
   primary:
+    # -- Extended Runtime Config Parameters (appended to main or default configuration).
+    # @default -- max_prepared_transactions = 100
     extendedConfiguration: |
       # override the default value of 0 to support bulk import and export
       max_prepared_transactions = 100
@@ -135,20 +136,39 @@ keycloak:
     - name: keycloak-admin
       secret:
         secretName: {{ template "keycloak.fullname" $ }}-admin-secret
+    - name: db-creds
+      secret:
+        secretName: {{ include "fhir.postgresql.fullname" . }}
   # -- Extra volume mounts for the Keycloak StatefulSet.
   # @default -- mount the keycloak-admin volume at /secrets/keycloak-admin
   extraVolumeMounts: |
     - name: keycloak-admin
       mountPath: /secrets/keycloak-admin
+    - name: db-creds
+      mountPath: /secrets/db-creds
   # -- Extra environment variables for the Keycloak StatefulSet.
-  # @default -- KEYCLOAK_USER_FILE/KEYCLOAK_PASSWORD_FILE set to the keycloak-admin mountPath
+  # @default -- KEYCLOAK_USER_FILE/KEYCLOAK_PASSWORD_FILE set to the keycloak-admin mountPath, DB info set to the postgresql subchart defaults.
   extraEnv: |
     - name: KEYCLOAK_USER_FILE
       value: /secrets/keycloak-admin/username
     - name: KEYCLOAK_PASSWORD_FILE
       value: /secrets/keycloak-admin/password
+    - name: DB_VENDOR
+      value: postgres
+    - name: DB_ADDR
+      value: {{ include "fhir.postgresql.fullname" . }}
+    - name: DB_PORT
+      value: "5432"
+    - name: DB_DATABASE
+      value: postgres
+    - name: DB_USER
+      value: postgres
+    - name: DB_PASSWORD_FILE
+      value: /secrets/db-creds/postgres-password
   postgresql:
-    nameOverride: keycloak-postgres
+    # -- The codecentric keycloak chart uses an outdated version of the bitnami postgresql chart
+    # which is no longer compatible with the one packaged in this chart.
+    enabled: false
   config:
     enabled: true
     image:

@@ -284,13 +284,13 @@ If a truststore Secret is specified, the default truststore file will be replace
 | keycloak.config.realms.test.clients.infernoBulk.standardFlowEnabled | bool | `false` |  |
 | keycloak.config.ttlSecondsAfterFinished | int | `100` |  |
 | keycloak.enabled | bool | `false` |  |
-| keycloak.extraEnv | string | KEYCLOAK_USER_FILE/KEYCLOAK_PASSWORD_FILE set to the keycloak-admin mountPath | Extra environment variables for the Keycloak StatefulSet. |
+| keycloak.extraEnv | string | KEYCLOAK_USER_FILE/KEYCLOAK_PASSWORD_FILE set to the keycloak-admin mountPath, DB info set to the postgresql subchart defaults. | Extra environment variables for the Keycloak StatefulSet. |
 | keycloak.extraVolumeMounts | string | mount the keycloak-admin volume at /secrets/keycloak-admin | Extra volume mounts for the Keycloak StatefulSet. |
 | keycloak.extraVolumes | string | a single volume named keycloak-admin with contents from the keycloak-admin-secret | Extra volumes for the Keycloak StatefulSets. |
 | keycloak.image.pullPolicy | string | `"IfNotPresent"` |  |
 | keycloak.image.repository | string | `"quay.io/alvearie/smart-keycloak"` |  |
 | keycloak.image.tag | string | `"0.5.1"` |  |
-| keycloak.postgresql.nameOverride | string | `"keycloak-postgres"` |  |
+| keycloak.postgresql.enabled | bool | `false` | The codecentric keycloak chart uses an outdated version of the bitnami postgresql chart which is no longer compatible with the one packaged in this chart. |
 | keycloakConfigTemplate | string | `"defaultKeycloakConfig"` | Template with keycloak-config.json input for the Alvearie keycloak-config project |
 | maxHeap | string | `""` | The value passed to the JVM via -Xmx to set the max heap size. |
 | membermatch.enabled | bool | `false` | Enable the $member-match operation in the fhir-server-config.json. The default image does not include the fhir-operation-member-match, and must be added to a custom image. |
@@ -329,12 +329,12 @@ If a truststore Secret is specified, the default truststore file will be replace
 | objectStorage.secretKey | string | `nil` | The object storage secret key. If objectStorageSecret is set, the secret key will be set from its contents. |
 | objectStorage.secretKeySecretKey | string | `nil` | For the Secret specified in objectStorageSecret, the key of the key/value pair containing the secret key. This value will be ignored if the objectStorageSecret value is not set. |
 | postgresql.auth.database | string | `"postgres"` | The name of the database |
-| postgresql.auth.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL passwords. `auth.postgresPassword`, `auth.password`, and `auth.replicationPassword` will be ignored and picked up from this secret. |
+| postgresql.auth.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL passwords. If valued, `auth.postgresPassword`, `auth.password`, and `auth.replicationPassword` will be ignored and picked up from this secret. |
 | postgresql.auth.password | string | `"change-password"` | The user password for connecting from the FHIR server to the database |
 | postgresql.auth.username | string | `"fhirserver"` | The user for connecting from the FHIR server to the database |
 | postgresql.enabled | bool | `true` | Enable an included PostgreSQL DB. If set to `false`, the connection settings under the `db` key are used |
 | postgresql.image.tag | string | `"14.5.0"` | The tag for the postgresql image. |
-| postgresql.primary | object | `{"extendedConfiguration":"# override the default value of 0 to support bulk import and export\nmax_prepared_transactions = 100\n"}` | Extended Runtime Config Parameters (appended to main or default configuration). |
+| postgresql.primary.extendedConfiguration | string | max_prepared_transactions = 100 | Extended Runtime Config Parameters (appended to main or default configuration). |
 | replicaCount | int | `2` | The number of replicas for the externally-facing FHIR server pods |
 | resources.limits.ephemeral-storage | string | `"1Gi"` |  |
 | resources.limits.memory | string | `"4Gi"` |  |

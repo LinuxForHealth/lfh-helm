@@ -63,7 +63,7 @@ NOTE: we should be able to replace this approach once https://github.com/helm/he
 {{- end -}}
 
 {{/*
-Get the database server's hostname
+Get the database server hostname
 */}}
 {{- define "fhir.database.host" -}}
 {{- ternary (include "fhir.postgresql.fullname" .) .Values.db.host .Values.postgresql.enabled -}}
@@ -91,7 +91,7 @@ Get the name of the database
 {{- end -}}
 
 {{/*
-Get the database server's port
+Get the database server port
 */}}
 {{- define "fhir.database.port" -}}
 {{- ternary "5432" .Values.db.port .Values.postgresql.enabled -}}
