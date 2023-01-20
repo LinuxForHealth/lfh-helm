@@ -5,6 +5,49 @@ entries:
       artifacthub.io/changes: |
         # When using the list of objects option the valid supported kinds are
         # added, changed, deprecated, removed, fixed, and security.
+        - kind: changed
+          description: bumped to LinuxForHealth version 5.1.1
+        - kind: changed
+          description: bumped to codecentric keycloak chart version 18.4.0
+        - kind: changed
+          description: bumped to bitnami postgresql chart version 11.9.13
+        - kind: changed
+          description: split db user creds in two; now uses separate admin user for schematool
+        - kind: removed
+          description: support for Db2 and all Db2-related values
+        - kind: removed
+          description: support for networking.k8s.io/v1/beta (kubernetes <1.19)
+      artifacthub.io/license: Apache-2.0
+    apiVersion: v2
+    appVersion: 5.1.1
+    created: "2023-01-20T18:25:24.957722623Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 11.9.13
+    - condition: keycloak.enabled
+      name: keycloak
+      repository: https://codecentric.github.io/helm-charts
+      version: 18.4.0
+    description: Helm chart for the LinuxForHealth FHIR Server
+    digest: bb9ace9f45493b2a471870f0ffc1b9c4281031efc168580b95c510a411b1a414
+    home: https://linuxforhealth.github.io/FHIR/
+    maintainers:
+    - email: lmsurpre@merative.com
+      name: Lee Surprenant
+    name: fhir-server
+    sources:
+    - https://github.com/LinuxForHealth/lfh-helm
+    - https://github.com/LinuxForHealth/FHIR
+    type: application
+    urls:
+    - https://github.com/LinuxForHealth/lfh-helm/releases/download/fhir-server-0.9.0/fhir-server-0.9.0.tgz
+    version: 0.9.0
+  - annotations:
+      artifacthub.io/changes: |
+        # When using the list of objects option the valid supported kinds are
+        # added, changed, deprecated, removed, fixed, and security.
         - kind: added
           description: optional ingress.ingressClassName config
         - kind: changed
@@ -106,4 +149,4 @@ entries:
     urls:
     - https://github.com/LinuxForHealth/lfh-helm/releases/download/fhir-server-0.8.0/fhir-server-0.8.0.tgz
     version: 0.8.0
-generated: "2022-11-08T20:10:45.882521879Z"
+generated: "2023-01-20T18:25:24.957738623Z"
