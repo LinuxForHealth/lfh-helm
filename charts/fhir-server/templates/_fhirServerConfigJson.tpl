@@ -136,11 +136,6 @@ The default fhir-server-config.json.
                             "from_collapse_limit": 12,
                             "join_collapse_limit": 12
                         }
-                        {{- else if eq .Values.db.type "db2" }}
-                        "tenantKey": "{{ .Values.db.tenantKey }}",
-                        "hints" : {
-                          "search.reopt": "ONCE"
-                        }
                         {{- end }}
                     }
                 }

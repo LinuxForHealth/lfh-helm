@@ -79,15 +79,17 @@ spec:
               value: "{{ include "fhir.database.port" $ }}"
             - name: FHIR_DB_NAME
               value: "{{ include "fhir.database.name" $ }}"
-            - name: FHIR_DB_USER
-              value: "{{ include "fhir.database.user" $ }}"
-            - name: FHIR_DB_SCHEMA
-              value: {{ .Values.db.schema }}
-            - name: FHIR_DB_PASSWORD
+            - name: FHIR_DB_ADMIN_USER
+              value: "{{ include "fhir.database.adminUser" $ }}"
+            - name: FHIR_DB_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: "{{ include "fhir.database.secretName" $ }}"
-                  key: "{{ include "fhir.database.passwordSecretKey" $ }}"
+                  key: "{{ include "fhir.database.adminPasswordKey" $ }}"
+            - name: FHIR_DB_USER
+              value:  "{{ include "fhir.database.user" $ }}"
+            - name: FHIR_DB_SCHEMA
+              value: {{ .Values.db.schema }}
           command: ["/bin/bash", "-c"]
           args:
             - |
@@ -98,16 +100,12 @@ spec:
                   --prop db.host=${FHIR_DB_HOSTNAME} \
                   --prop db.port=${FHIR_DB_PORT} \
                   --prop db.database=${FHIR_DB_NAME} \
-                  --prop user=${FHIR_DB_USER} \
-                  --prop password=${FHIR_DB_PASSWORD} \
+                  --prop user=${FHIR_DB_ADMIN_USER} \
+                  --prop password=${FHIR_DB_ADMIN_PASSWORD} \
               {{- if .Values.db.enableTls }}
-              {{- if eq .Values.db.type "db2" }}
-                  --prop sslConnection=true \
-              {{- else }}
                   --prop ssl=true \
                   --prop sslmode=verify-full \
                   --prop sslrootcert={{ .Values.db.certPath }} \
-              {{- end }}
               {{- end }}
                   --schema-name {{ .Values.db.schema }} \
                   --create-schemas;
@@ -119,18 +117,15 @@ spec:
                   --prop db.host=${FHIR_DB_HOSTNAME} \
                   --prop db.port=${FHIR_DB_PORT} \
                   --prop db.database=${FHIR_DB_NAME} \
-                  --prop user=${FHIR_DB_USER} \
-                  --prop password=${FHIR_DB_PASSWORD} \
+                  --prop user=${FHIR_DB_ADMIN_USER} \
+                  --prop password=${FHIR_DB_ADMIN_PASSWORD} \
               {{- if .Values.db.enableTls }}
-              {{- if eq .Values.db.type "db2" }}
-                  --prop sslConnection=true \
-              {{- else }}
                   --prop ssl=true \
                   --prop sslmode=verify-full \
                   --prop sslrootcert={{ .Values.db.certPath }} \
               {{- end }}
-              {{- end }}
                   --schema-name {{ .Values.db.schema }} \
-                  --update-schema
+                  --update-schema \
+                  --grant-to ${FHIR_DB_USER}
   backoffLimit: 4
 {{- end }}

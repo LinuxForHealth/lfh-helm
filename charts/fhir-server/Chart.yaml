@@ -1,11 +1,11 @@
 apiVersion: v2
 description: Helm chart for the LinuxForHealth FHIR Server
 name: fhir-server
-version: 0.8.3
+version: 0.9.0
 appVersion: 5.1.1
 dependencies:
   - name: postgresql
-    version: 10.16.2
+    version: 11.9.13
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
   - name: keycloak
@@ -29,3 +29,11 @@ annotations:
       description: bumped to LinuxForHealth version 5.1.1
     - kind: changed
       description: bumped to codecentric keycloak chart version 18.4.0
+    - kind: changed
+      description: bumped to bitnami postgresql chart version 11.9.13
+    - kind: changed
+      description: split db user creds in two; now uses separate admin user for schematool
+    - kind: removed
+      description: support for Db2 and all Db2-related values
+    - kind: removed
+      description: support for networking.k8s.io/v1/beta (kubernetes <1.19)

@@ -1,5 +1,5 @@
 
-![Version: 0.8.2](https://img.shields.io/badge/Version-0.8.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 5.0.0](https://img.shields.io/badge/AppVersion-5.0.0-informational?style=flat-square)
+![Version: 0.9.0](https://img.shields.io/badge/Version-0.9.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 5.1.1](https://img.shields.io/badge/AppVersion-5.1.1-informational?style=flat-square)
 
 # The LinuxForHealth FHIR Server Helm Chart
 
@@ -91,15 +91,16 @@ In addition to providing a default FHIR server configuration named template, thi
 
 The deployer can specify a custom search parameters named template which will be used in the generation of the `extension-search-parameters.json` file by overriding the `extensionSearchParametersTemplate` chart value.
 
-The deployer can specify custom datasource named templates which will be used in the generation of the `datasource.xml` and `bulkdata.xml` files by overriding the `datasourcesTemplate` chart value. The default for this chart value is a datasources template for a Postgres database, but this helm chart also provides named templates for Db2, Db2 on Cloud, and Derby databases in the `_datasourcesXml.tpl` file.
+The deployer can specify custom datasource named templates which will be used in the generation of the `datasource.xml` and `bulkdata.xml` files by overriding the `datasourcesTemplate` chart value.
+The default for this chart value is a template with datasources for a single Postgres database.
 
 ## Using existing Secrets for sensitive data
 
 This helm chart specifies chart values for the following pieces of sensitive data:
 
-- Database password or api key:
+- Database user passwords:
+    - `db.adminPassword`
     - `db.password`
-    - `db.apiKey`
 - FHIR server user and admin passwords:
     - `fhirUserPassword`
     - `fhirAdminPassword`
@@ -113,13 +114,13 @@ These values can be specified directly in the `values.yaml` file, or the deploye
 
 ### Database password or api key
 
-To have the `db.password` and `db.apiKey` values read from an existing Secret, the deployer must override the following chart values:
+To have the `db.adminPassword` and `db.password` values read from an existing Secret, the deployer must override the following chart values:
 
 - `db.dbSecret` - this is set to the name of the Secret from which the database information will be read
-- `db.passwordSecretKey` - this is set to the key of the key/value pair within the Secret that contains the password
-- `db.apiKeySecretKey` - this is set to the key of the key/value pair within the Secret that contains the api key
+- `db.adminPasswordKey` - this is set to the key of the key/value pair within the Secret that contains the admin user password (for schema management)
+- `db.userPasswordKey` - this is set to the key of the key/value pair within the Secret that contains the fhir-server's user password
 
-If the `db.dbSecret` value is set, this helm chart will only look in the specified Secret for the password and api key. The `db.password` and `db.apiKey` chart values will be ignored.
+If the `db.dbSecret` value is set, this helm chart will only look in the specified Secret for the passwords. The `db.adminPassword` and `db.password` chart values will be ignored.
 
 ### FHIR server user and admin passwords
 
@@ -209,23 +210,20 @@ If a truststore Secret is specified, the default truststore file will be replace
 | audit.type | string | `"auditevent"` | `cadf` or `auditevent` |
 | containerSecurityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":false,"runAsNonRoot":true,"runAsUser":1001}` | security context for the server container |
 | datasourcesTemplate | string | `"defaultPostgresDatasources"` | Template containing the datasources.xml content |
-| db.apiKey | string | `nil` | The database apiKey. If apiKeySecret is set, the apiKey will be set from its contents. |
-| db.apiKeySecretKey | string | `nil` | For the Secret specified in dbSecret, the key of the key/value pair containing the apiKey. This value will be ignored if the dbSecret value is not set. |
+| db.adminPassword | string | `nil` | The database admin user password. If dbSecret is set, the password will be set from its contents. Only used when `postgresql.enabled` is false. |
+| db.adminPasswordKey | string | `"postgres-password"` | For the Secret specified in dbSecret, the key of the key/value pair containing the admin user password. Only used when `postgresql.enabled` is false. Used for connecting from the schematool to the database. This value will be ignored if the dbSecret value is not set. |
+| db.adminUser | string | `"postgres"` | The user for connecting from the schematool to the database. Only used when `postgresql.enabled` is false. |
 | db.certPath | string | `nil` |  |
-| db.dbSecret | string | `"postgres"` | The name of a Secret from which to retrieve database information. If this value is set, it is expected that passwordSecretKey and/or apiKeySecretKey will also be set. |
-| db.enableTls | bool | `false` |  |
+| db.dbSecret | string | `"postgresql"` | The name of a Secret from which to retrieve database information. Only used when `postgresql.enabled` is false. If this value is set, it is expected that adminPasswordKey and userPasswordKey will also be set. |
+| db.enableTls | bool | `false` | Whether to use TLS on the connection between the FHIR server and the database. |
 | db.host | string | `"postgres"` |  |
-| db.name | string | `"postgres"` |  |
-| db.password | string | `nil` | The database password. If dbSecret is set, the password will be set from its contents. |
-| db.passwordSecretKey | string | `"postgresql-password"` | For the Secret specified in dbSecret, the key of the key/value pair containing the password. This value will be ignored if the dbSecret value is not set. |
-| db.pluginName | string | `nil` |  |
+| db.name | string | `"postgres"` | The database name. Only used when `postgresql.enabled` is false. |
+| db.password | string | `nil` | The database user password. If dbSecret is set, the password will be set from its contents. Only used when `postgresql.enabled` is false. |
 | db.port | int | `5432` |  |
 | db.schema | string | `"fhirdata"` |  |
-| db.securityMechanism | string | `nil` |  |
-| db.sslConnection | bool | `true` |  |
-| db.tenantKey | string | `nil` |  |
-| db.type | string | `"postgresql"` |  |
-| db.user | string | `"postgres"` |  |
+| db.type | string | `"postgresql"` | The database type; `postgresql` or `derby`. |
+| db.user | string | `"fhirserver"` | The user for connecting from the FHIR server to the database. Only used when `postgresql.enabled` is false. |
+| db.userPasswordKey | string | `"password"` | For the Secret specified in dbSecret, the key of the key/value pair containing the user password. Only used when `postgresql.enabled` is false. Used for connecting from the FHIR server to the database. This value will be ignored if the dbSecret value is not set. |
 | endpoints | object | A single entry for resourceType "Resource" that applies to all resource types | Control which interactions are supported for which resource type endpoints |
 | endpoints.Resource.interactions | list | All interactions. | The set of enabled interactions for this resource type: [create, read, vread, history, search, update, patch, delete] |
 | endpoints.Resource.profiles.atLeastOne | list | `nil` | Instances of this type must claim conformance to at least one of the listed profiles; nil means no profile conformance required |
@@ -262,8 +260,8 @@ If a truststore Secret is specified, the default truststore file will be replace
 | ingress.tls[0].secretName | string | `""` |  |
 | keyStoreFormat | string | `"PKCS12"` | For the keystore specified in keyStoreSecret, the keystore format (PKCS12 or JKS). This value will be ignored if the keyStoreSecret value is not set. |
 | keyStoreSecret | string | `nil` | Secret containing the FHIR server keystore file and its password. The secret must contain the keys ''fhirKeyStore' (the keystore file contents in the format specified in keyStoreFormat) and 'fhirKeyStorePassword' (the keystore password) |
-| keycloak.adminPassword | string | `"change-password"` | An initial keycloak admin password for creating the initial Keycloak admin user |
-| keycloak.adminUsername | string | `"admin"` | An initial keycloak admin username for creating the initial Keycloak admin user |
+| keycloak.adminPassword | string | `"change-password"` | An initial keycloak admin password for creating the initial Keycloak admin user. |
+| keycloak.adminUsername | string | `"admin"` | An initial keycloak admin username for creating the initial Keycloak admin user. |
 | keycloak.config.enabled | bool | `true` |  |
 | keycloak.config.image.pullPolicy | string | `"IfNotPresent"` |  |
 | keycloak.config.image.repository | string | `"quay.io/alvearie/keycloak-config"` |  |
@@ -271,7 +269,7 @@ If a truststore Secret is specified, the default truststore file will be replace
 | keycloak.config.realms.test.clients.inferno.clientAuthenticatorType | string | `"client-secret"` |  |
 | keycloak.config.realms.test.clients.inferno.consentRequired | bool | `true` |  |
 | keycloak.config.realms.test.clients.inferno.defaultScopes[0] | string | `"launch/patient"` |  |
-| keycloak.config.realms.test.clients.inferno.optionalScopes | list | all scopes defined by the `security.oauth` configuration. | OAuth 2.0 scopes supported by this client |
+| keycloak.config.realms.test.clients.inferno.optionalScopes | list | all scopes defined by the `security.oauth` configuration. | OAuth 2.0 scopes supported by this client. |
 | keycloak.config.realms.test.clients.inferno.publicClient | bool | `true` |  |
 | keycloak.config.realms.test.clients.inferno.redirectURIs[0] | string | `"http://localhost:4567/inferno/*"` |  |
 | keycloak.config.realms.test.clients.inferno.serviceAccountsEnabled | bool | `false` |  |
@@ -280,19 +278,19 @@ If a truststore Secret is specified, the default truststore file will be replace
 | keycloak.config.realms.test.clients.infernoBulk.consentRequired | bool | `false` |  |
 | keycloak.config.realms.test.clients.infernoBulk.defaultScopes | list | `[]` |  |
 | keycloak.config.realms.test.clients.infernoBulk.jwksUrl | string | `""` |  |
-| keycloak.config.realms.test.clients.infernoBulk.optionalScopes | list | all scopes defined by the `security.oauth` configuration. | OAuth 2.0 scopes supported by this client |
+| keycloak.config.realms.test.clients.infernoBulk.optionalScopes | list | all scopes defined by the `security.oauth` configuration. | OAuth 2.0 scopes supported by this client. |
 | keycloak.config.realms.test.clients.infernoBulk.publicClient | bool | `false` |  |
 | keycloak.config.realms.test.clients.infernoBulk.serviceAccountsEnabled | bool | `true` |  |
 | keycloak.config.realms.test.clients.infernoBulk.standardFlowEnabled | bool | `false` |  |
 | keycloak.config.ttlSecondsAfterFinished | int | `100` |  |
 | keycloak.enabled | bool | `false` |  |
-| keycloak.extraEnv | string | KEYCLOAK_USER_FILE/KEYCLOAK_PASSWORD_FILE set to the keycloak-admin mountPath | Extra environment variables for the Keycloak StatefulSet |
-| keycloak.extraVolumeMounts | string | mount the keycloak-admin volume at /secrets/keycloak-admin | Extra volume mounts for the Keycloak StatefulSet |
-| keycloak.extraVolumes | string | a single volume named keycloak-admin with contents from the keycloak-admin-secret | Extra volumes for the Keycloak StatefulSets |
+| keycloak.extraEnv | string | KEYCLOAK_USER_FILE/KEYCLOAK_PASSWORD_FILE set to the keycloak-admin mountPath, DB info set to the postgresql subchart defaults. | Extra environment variables for the Keycloak StatefulSet. |
+| keycloak.extraVolumeMounts | string | mount the keycloak-admin volume at /secrets/keycloak-admin | Extra volume mounts for the Keycloak StatefulSet. |
+| keycloak.extraVolumes | string | a single volume named keycloak-admin with contents from the keycloak-admin-secret | Extra volumes for the Keycloak StatefulSets. |
 | keycloak.image.pullPolicy | string | `"IfNotPresent"` |  |
 | keycloak.image.repository | string | `"quay.io/alvearie/smart-keycloak"` |  |
 | keycloak.image.tag | string | `"0.5.1"` |  |
-| keycloak.postgresql.nameOverride | string | `"keycloak-postgres"` |  |
+| keycloak.postgresql.enabled | bool | `false` | The codecentric keycloak chart uses an outdated version of the bitnami postgresql chart which is no longer compatible with the one packaged in this chart. |
 | keycloakConfigTemplate | string | `"defaultKeycloakConfig"` | Template with keycloak-config.json input for the Alvearie keycloak-config project |
 | maxHeap | string | `""` | The value passed to the JVM via -Xmx to set the max heap size. |
 | membermatch.enabled | bool | `false` | Enable the $member-match operation in the fhir-server-config.json. The default image does not include the fhir-operation-member-match, and must be added to a custom image. |
@@ -330,13 +328,13 @@ If a truststore Secret is specified, the default truststore file will be replace
 | objectStorage.objectStorageSecret | string | `nil` | The name of a Secret from which to retrieve object storage information. If this value is set, it is expected that locationSecretKey, endpointSecretKey, accessKeySecretKey, and secretKeySecretKey will also be set. |
 | objectStorage.secretKey | string | `nil` | The object storage secret key. If objectStorageSecret is set, the secret key will be set from its contents. |
 | objectStorage.secretKeySecretKey | string | `nil` | For the Secret specified in objectStorageSecret, the key of the key/value pair containing the secret key. This value will be ignored if the objectStorageSecret value is not set. |
-| postgresql.containerSecurityContext.allowPrivilegeEscalation | bool | `false` |  |
-| postgresql.containerSecurityContext.capabilities.drop[0] | string | `"ALL"` |  |
-| postgresql.enabled | bool | `true` | enable an included PostgreSQL DB. if set to `false`, the connection settings under the `db` key are used |
-| postgresql.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL passwords. The secret must contain the keys `postgresql-password` (the password for `postgresqlUsername` when it is different from `postgres`), `postgresql-postgres-password` (which will override `postgresqlPassword`), `postgresql-replication-password` (which will override `replication.password`), and `postgresql-ldap-password` (used to authenticate on LDAP). The value is evaluated as a template. |
-| postgresql.image.tag | string | `"14.5.0"` | the tag for the postgresql image |
-| postgresql.postgresqlDatabase | string | `"fhir"` | name of the database to create. see: <https://github.com/bitnami/bitnami-docker-postgresql/blob/master/README.md#creating-a-database-on-first-run> |
-| postgresql.postgresqlExtendedConf | object | `{"maxPreparedTransactions":24}` | Extended Runtime Config Parameters (appended to main or default configuration) |
+| postgresql.auth.database | string | `"postgres"` | The name of the database |
+| postgresql.auth.existingSecret | string | `""` | Name of existing secret to use for PostgreSQL passwords. If valued, `auth.postgresPassword`, `auth.password`, and `auth.replicationPassword` will be ignored and picked up from this secret. |
+| postgresql.auth.password | string | `"change-password"` | The user password for connecting from the FHIR server to the database |
+| postgresql.auth.username | string | `"fhirserver"` | The user for connecting from the FHIR server to the database |
+| postgresql.enabled | bool | `true` | Enable an included PostgreSQL DB. If set to `false`, the connection settings under the `db` key are used |
+| postgresql.image.tag | string | `"14.5.0"` | The tag for the postgresql image. |
+| postgresql.primary.extendedConfiguration | string | max_prepared_transactions = 100 | Extended Runtime Config Parameters (appended to main or default configuration). |
 | replicaCount | int | `2` | The number of replicas for the externally-facing FHIR server pods |
 | resources.limits.ephemeral-storage | string | `"1Gi"` |  |
 | resources.limits.memory | string | `"4Gi"` |  |
