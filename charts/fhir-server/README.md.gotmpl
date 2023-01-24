@@ -9,17 +9,35 @@ with a focus on performance and configurability.
 This helm chart will help you install the LinuxForHealth FHIR Server in a Kubernetes environment and uses
 ConfigMaps and Secrets to support the wide range of configuration options available for the server.
 
+This chart requires a minimum helm version of 3.7.0.
+
 ## Sample usage
 
 ```sh
 helm repo add linuxforhealth https://linuxforhealth.github.io/lfh-helm
-export POSTGRES_PASSWORD=$(openssl rand -hex 20)
-helm upgrade --install --render-subchart-notes fhir-server linuxforhealth/fhir-server --set postgresql.postgresqlPassword=${POSTGRES_PASSWORD} --set ingress.hostname=example.com --set 'ingress.tls[0].secretName=cluster-tls-secret'
+export POSTGRES_ADMIN_PASSWORD=$(openssl rand -hex 20)
+export POSTGRES_USER_PASSWORD=$(openssl rand -hex 20)
+helm upgrade --install --render-subchart-notes fhir-server linuxforhealth/fhir-server \
+  --set postgresql.auth.postgresPassword=${POSTGRES_ADMIN_PASSWORD} \
+  --set postgresql.auth.password=${POSTGRES_USER_PASSWORD} \
+  --set ingress.hostname=example.com \
+  --set 'ingress.tls[0].secretName=cluster-tls-secret'
 ```
 
-This will install the latest version if the LinuxForHealth FHIR Server using an included PostgreSQL database for persistence.
-Note that `postgresql.postgresqlPassword` must be set for all upgrades that use the embedded postgresql chart,
-otherwise [the postgresql password will be overwritten and lost](https://artifacthub.io/packages/helm/bitnami/postgresql#troubleshooting).
+This will install the latest version of the LinuxForHealth FHIR Server using an included PostgreSQL database for persistence.
+
+Note that, to upgrade, either:
+
+* `postgresql.auth.postgresPassword` and `postgresql.auth.password` must be set to these same values (`$POSTGRES_ADMIN_PASSWORD` and `$POSTGRES_USER_PASSWORD` respectively); or
+* `postgresql.auth.existingSecret` must be set to the name of the secret created from the initial installation.
+
+Otherwise the passwords in the secret may become [out-of-sync](https://docs.bitnami.com/general/how-to/troubleshoot-helm-chart-issues/#credential-errors-while-upgrading-chart-releases)
+with the passwords in the persistent volume claim.
+
+Often it is easiest to specify a [values override file](https://helm.sh/docs/chart_template_guide/values_files),
+as opposed to setting the values from the command line on each installation / upgrade.
+
+### Transport Layer Security
 
 By default, the LinuxForHealth FHIR Server will only serve HTTPS traffic.
 With the [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx),
