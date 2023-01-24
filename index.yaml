@@ -6,6 +6,39 @@ entries:
         # When using the list of objects option the valid supported kinds are
         # added, changed, deprecated, removed, fixed, and security.
         - kind: changed
+          description: README updates
+      artifacthub.io/license: Apache-2.0
+    apiVersion: v2
+    appVersion: 5.1.1
+    created: "2023-01-24T22:19:18.479815984Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 11.9.13
+    - condition: keycloak.enabled
+      name: keycloak
+      repository: https://codecentric.github.io/helm-charts
+      version: 18.4.0
+    description: Helm chart for the LinuxForHealth FHIR Server
+    digest: 2cc802ab36b39a93a89a119e7c5d4a5ae583415ef31457f3d1389edb80948928
+    home: https://linuxforhealth.github.io/FHIR/
+    maintainers:
+    - email: lmsurpre@merative.com
+      name: Lee Surprenant
+    name: fhir-server
+    sources:
+    - https://github.com/LinuxForHealth/lfh-helm
+    - https://github.com/LinuxForHealth/FHIR
+    type: application
+    urls:
+    - https://github.com/LinuxForHealth/lfh-helm/releases/download/fhir-server-0.9.1/fhir-server-0.9.1.tgz
+    version: 0.9.1
+  - annotations:
+      artifacthub.io/changes: |
+        # When using the list of objects option the valid supported kinds are
+        # added, changed, deprecated, removed, fixed, and security.
+        - kind: changed
           description: bumped to LinuxForHealth version 5.1.1
         - kind: changed
           description: bumped to codecentric keycloak chart version 18.4.0
@@ -149,4 +182,4 @@ entries:
     urls:
     - https://github.com/LinuxForHealth/lfh-helm/releases/download/fhir-server-0.8.0/fhir-server-0.8.0.tgz
     version: 0.8.0
-generated: "2023-01-20T18:25:24.957738623Z"
+generated: "2023-01-24T22:19:18.479836685Z"
