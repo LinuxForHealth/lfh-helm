@@ -1,7 +1,7 @@
 apiVersion: v2
 description: Helm chart for the LinuxForHealth FHIR Server
 name: fhir-server
-version: 0.9.0
+version: 0.9.1
 appVersion: 5.1.1
 dependencies:
   - name: postgresql
@@ -26,14 +26,4 @@ annotations:
     # When using the list of objects option the valid supported kinds are
     # added, changed, deprecated, removed, fixed, and security.
     - kind: changed
-      description: bumped to LinuxForHealth version 5.1.1
-    - kind: changed
-      description: bumped to codecentric keycloak chart version 18.4.0
-    - kind: changed
-      description: bumped to bitnami postgresql chart version 11.9.13
-    - kind: changed
-      description: split db user creds in two; now uses separate admin user for schematool
-    - kind: removed
-      description: support for Db2 and all Db2-related values
-    - kind: removed
-      description: support for networking.k8s.io/v1/beta (kubernetes <1.19)
+      description: README updates
